@@ -1,0 +1,11 @@
+/* claude-qd-102 · 主色：蓝 #409eff */
+/* 只改 Element Plus 的主题变量，不动任何组件样式；main.js 里在 element-plus 的 css 之后引入 */
+:root {
+  --el-color-primary: #409eff;
+  --el-color-primary-light-3: #79bbff;
+  --el-color-primary-light-5: #a0ceff;
+  --el-color-primary-light-7: #c6e2ff;
+  --el-color-primary-light-8: #d9ecff;
+  --el-color-primary-light-9: #ecf5ff;
+  --el-color-primary-dark-2: #337ecc;
+}
