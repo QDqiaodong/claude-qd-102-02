@@ -95,4 +95,6 @@ networks:
 
 volumes:
   mysql_data:
+    name: claude-qd-102_mysql_data
   redis_data:
+    name: claude-qd-102_redis_data
