@@ -65,6 +65,11 @@ public class WashShortageService {
         }
         Linen linen = linens.findByIdForUpdate(s.linenId)
                 .orElseThrow(() -> new BizException("布草不存在"));
+        // 停用档案不许再因为追差补回冒出可领用件数（与停用共用这把行锁）。
+        if ("停用".equals(linen.status)) {
+            throw new BizException("布草已经停用，追差 " + s.code + " 短少的 " + s.shortQty
+                    + " 件不能补回可领用在库；先启用档案再补回，或转报损落定");
+        }
         // 补回才是在库按全额涨的时刻：收工时只回了 returnQty，现在把短少的也还上。
         linen.stock = linen.stock + s.shortQty;
         linens.save(linen);

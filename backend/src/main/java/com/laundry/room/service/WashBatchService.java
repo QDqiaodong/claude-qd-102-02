@@ -183,6 +183,13 @@ public class WashBatchService {
 
         Linen linen = linens.findByIdForUpdate(batch.linenId)
                 .orElseThrow(() -> new BizException("布草不存在"));
+        // 停用和收工共用这把布草行锁，两人一边点停用一边点收工只成一件：
+        // 停用先拿锁，这里看到的就是停用档案——件数不许加回可领用，收工整单回滚，
+        // 批次仍是「待烘干」，等档案重新启用或盘点后再处理。
+        if ("停用".equals(linen.status)) {
+            throw new BizException("布草 " + linen.name + " 已经停用，这批回洗的 " + returnQty
+                    + " 件不能加回可领用在库；先把档案启用再收工，或找库房盘点落定");
+        }
         // 只按实际回洗件数回库；短少的几件扣在库外，等追差结案（补回 / 报损确认）。
         linen.stock = linen.stock + returnQty;
         linens.save(linen);
