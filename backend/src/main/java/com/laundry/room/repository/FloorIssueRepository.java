@@ -10,5 +10,8 @@ public interface FloorIssueRepository extends JpaRepository<FloorIssue, Long> {
     List<FloorIssue> findByLinenIdAndFloorCodeAndIssueDate(Long linenId, String floorCode,
                                                           LocalDate issueDate);
 
+    /** 停用前查在途：这件布草已送出还没收回的楼层单。 */
+    List<FloorIssue> findByLinenIdAndStatus(Long linenId, String status);
+
     List<FloorIssue> findAllByOrderByIdDesc();
 }

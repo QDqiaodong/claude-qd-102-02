@@ -121,6 +121,7 @@ public class WashBatchService {
      *
      * 常规 / 强化批次按实际回洗件数回库；回洗少于送洗时，短少件数当场挂追差，
      * 追差没结案，这几件就不进可领用在库——在库只涨回洗回来的部分。
+     * 布草已经停用的，收工直接被挡住：停用档案上不能再长出可领用件数。
      */
     private WashBatch finish(WashBatch batch, BatchDonePayload payload) {
         if (!"待烘干".equals(batch.status)) {
@@ -183,6 +184,12 @@ public class WashBatchService {
 
         Linen linen = linens.findByIdForUpdate(batch.linenId)
                 .orElseThrow(() -> new BizException("布草不存在"));
+        // 停用已经落下的档案，收工不许再把件数加回可领用。
+        // 停用和收工抢的是同一把台账行锁，在这里看到停用，说明对面先成了。
+        if ("停用".equals(linen.status)) {
+            throw new BizException("布草 " + linen.name + " 已经停用，收工回洗的 " + returnQty
+                    + " 件不能加回停用档案的可领用；要先启用再收工");
+        }
         // 只按实际回洗件数回库；短少的几件扣在库外，等追差结案（补回 / 报损确认）。
         linen.stock = linen.stock + returnQty;
         linens.save(linen);
